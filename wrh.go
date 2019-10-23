@@ -6,6 +6,8 @@ func uint64ToFloat64(v uint64) float64 {
 	return float64(v&ones) / zeros
 }
 
+// ResponsibleNodes calculates all scores from nodes and puts responsible nodes
+// into respNodes.
 func ResponsibleNodes(nodes Nodes, key []byte, respNodes Nodes) {
 	respNodesLen := len(respNodes)
 	if respNodesLen <= 0 {
@@ -32,6 +34,7 @@ func ResponsibleNodes(nodes Nodes, key []byte, respNodes Nodes) {
 	}
 }
 
+// ResponsibleNodes2 calculates all scores from nodes and returns responsible nodes.
 func ResponsibleNodes2(nodes Nodes, key []byte, count int) Nodes {
 	if count <= 0 {
 		return nil
@@ -41,7 +44,9 @@ func ResponsibleNodes2(nodes Nodes, key []byte, count int) Nodes {
 	return respNodes
 }
 
-func FindSeed(nodes Nodes, seed uint32) int {
+// FindBySeed finds a node by seed and returns its index. If seed is not exists,
+// it returns -1.
+func FindBySeed(nodes Nodes, seed uint32) int {
 	for i, j := 0, len(nodes); i < j; i++ {
 		if nodes[i].Seed == seed {
 			return i
@@ -50,28 +55,32 @@ func FindSeed(nodes Nodes, seed uint32) int {
 	return -1
 }
 
-func MaxScore(nodes Nodes) uint32 {
-	var result uint32
+// FindByMaxScore finds a node which has maximum score and returns its index.
+// If nodes has no node, it returns -1.
+func FindByMaxScore(nodes Nodes) int {
+	result := -1
 	var max float64
 	for i, j := 0, len(nodes); i < j; i++ {
 		if nodes[i].score > max {
-			result = nodes[i].Seed
+			result = i
 			max = nodes[i].score
 		}
 	}
 	return result
 }
 
+// MergeNodes merges nodes1 and nodes2, appends mergedNodesIn, returns
+// mergedNodes which has all merged nodes. mergedNodesIn can be nil.
 func MergeNodes(nodes1, nodes2 Nodes, mergedNodesIn Nodes) (mergedNodes Nodes) {
 	mergedNodes = mergedNodesIn
 	for i := range nodes1 {
-		if FindSeed(mergedNodes, nodes1[i].Seed) >= 0 {
+		if FindBySeed(mergedNodes, nodes1[i].Seed) >= 0 {
 			continue
 		}
 		mergedNodes = append(mergedNodes, nodes1[i])
 	}
 	for i := range nodes2 {
-		if FindSeed(mergedNodes, nodes2[i].Seed) >= 0 {
+		if FindBySeed(mergedNodes, nodes2[i].Seed) >= 0 {
 			continue
 		}
 		mergedNodes = append(mergedNodes, nodes2[i])
