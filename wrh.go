@@ -1,5 +1,7 @@
 package wrh
 
+// Package wrh is implementation of weighted rendezvous hash algorithm.
+
 func uint64ToFloat64(v uint64) float64 {
 	ones := uint64(^uint64(0) >> (64 - 53))
 	zeros := float64(1 << 53)
